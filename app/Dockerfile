@@ -2,9 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install development dependencies
+# Install development dependencies and tsx globally
 COPY package*.json ./
-RUN npm ci
+RUN npm ci && npm install -g tsx
 
 # Create necessary directories and set permissions
 RUN mkdir -p dist/public uploads node_modules/.vite && \
