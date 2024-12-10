@@ -13,7 +13,7 @@ Folgen Sie diesen Schritten, um die Anwendung lokal zum Laufen zu bringen:
 
 1. Repository klonen:
    ```bash
-   git clone [REPOSITORY_URL]
+   git clone https://github.com/SiarCoding/nextmove-docker.git
    cd nextmove-docker
    ```
 
