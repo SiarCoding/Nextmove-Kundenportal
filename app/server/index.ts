@@ -31,7 +31,9 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" ? false : ["http://localhost:5000", "http://localhost:5173"],
+  origin: process.env.NODE_ENV === "production" 
+    ? ['https://nextmove-docker.netlify.app']
+    : ['http://localhost:3000', 'http://localhost:5000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
