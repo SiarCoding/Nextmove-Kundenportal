@@ -3,11 +3,74 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 0%;  /* Reines Schwarz */
+    --foreground: 0 0% 100%;  /* Weiß */
+    --card: 0 0% 10%;  /* Sehr dunkles Grau */
+    --card-foreground: 0 0% 100%;  /* Weiß */
+    --popover: 0 0% 10%;  /* Sehr dunkles Grau */
+    --popover-foreground: 0 0% 100%;  /* Weiß */
+    --primary: 25 100% 55%;  /* Helleres Orange */
+    --primary-foreground: 0 0% 0%;  /* Schwarz */
+    --secondary: 0 0% 15%;  /* Dunkelgrau */
+    --secondary-foreground: 0 0% 100%;  /* Weiß */
+    --muted: 0 0% 20%;  /* Dunkelgrau */
+    --muted-foreground: 0 0% 60%;  /* Hellgrau */
+    --accent: 25 100% 55%;  /* Helleres Orange */
+    --accent-foreground: 0 0% 0%;  /* Schwarz */
+    --destructive: 0 100% 50%;  /* Rot */
+    --destructive-foreground: 0 0% 100%;  /* Weiß */
+    --border: 0 0% 20%;  /* Dunkelgrau */
+    --input: 0 0% 20%;  /* Dunkelgrau */
+    --ring: 25 100% 55%;  /* Helleres Orange */
+    --radius: 0.5rem;
+
+    /* Chart Farben */
+    --chart-1: 25 100% 55%;  /* Helleres Orange */
+    --chart-2: 25 90% 50%;   /* Orange */
+    --chart-3: 25 80% 45%;   /* Dunkleres Orange */
+    --chart-4: 25 70% 40%;   /* Noch dunkleres Orange */
+    --chart-5: 25 60% 35%;   /* Sehr dunkles Orange */
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 5%;  /* Fast Schwarz */
+    --sidebar-foreground: 0 0% 100%;  /* Weiß */
+    --sidebar-primary: 25 100% 55%;  /* Helleres Orange */
+    --sidebar-primary-foreground: 0 0% 0%;  /* Schwarz */
+    --sidebar-accent: 0 0% 15%;  /* Dunkelgrau */
+    --sidebar-accent-foreground: 0 0% 100%;  /* Weiß */
+    --sidebar-border: 0 0% 20%;  /* Dunkelgrau */
+    --sidebar-ring: 25 100% 55%;  /* Helleres Orange */
+  }
+}
+
+@layer base {
   * {
-    @apply border-border;
+    @apply border-[hsl(var(--border))];
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Navigation Links */
+  .nav-link {
+    @apply text-foreground;
   }
 
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
+  /* Sidebar Links */
+  .sidebar-link {
+    @apply text-foreground bg-transparent;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Interactive Elements */
+  .interactive {
+    @apply text-primary cursor-pointer;
   }
 }
