@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+.git
+.gitignore
+.env
+**/.env
+npm-debug.log
+**/dist
+**/.next
+**/.nuxt
+**/.output
+**/.vitepress/dist
+**/.vitepress/.temp
+.DS_Store
+.idea
+.vscode
