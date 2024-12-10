@@ -1,11 +1,12 @@
 FROM node:18-alpine
 
-WORKDIR /app
-
-# Install necessary build tools
+# Install build dependencies
 RUN apk add --no-cache python3 make g++
 
-# Copy package files first for better caching
+# Set working directory
+WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
 COPY client/package*.json ./client/
 
@@ -16,21 +17,20 @@ RUN cd client && npm install
 # Copy all source files
 COPY . .
 
-# Build the client first
+# Build client and server
 RUN cd client && npm run build
-
-# Build the server
 RUN npm run build:server
 
-# Create necessary directories and set permissions
-RUN mkdir -p uploads && \
+# Create uploads directory and set permissions
+RUN mkdir -p dist/client/uploads && \
+    cp -r client/dist/client/* dist/client/ && \
     chown -R node:node /app
 
-# Switch to node user
+# Switch to non-root user
 USER node
 
 # Expose port
 EXPOSE 10000
 
-# Start the production server
+# Start the application
 CMD ["node", "dist/index.js"]
