@@ -32,7 +32,7 @@ const app = express();
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === "production" 
-    ? ['https://thriving-clafoutis-e2b11a.netlify.app']
+    ? ['https://wondrous-mandazi-b9ffb5.netlify.app']
     : ['http://localhost:3000', 'http://localhost:5000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
