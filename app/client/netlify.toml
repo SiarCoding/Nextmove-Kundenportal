@@ -5,18 +5,13 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://nextmove-api.onrender.com/api/:splat"
+  to = "https://nextmove-api.onrender.com/:splat"
   status = 200
   force = true
   headers = {X-From = "Netlify"}
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/<path>"
   to = "/index.html"
   status = 200
 
@@ -28,3 +23,5 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "X-From, Authorization, Content-Type"

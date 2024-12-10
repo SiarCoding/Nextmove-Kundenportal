@@ -32,11 +32,11 @@ const app = express();
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === "production" 
-    ? ['https://tangerine-medovik-c39fb2.netlify.app']
+    ? ['https://vermillion-mooncake-924f42.netlify.app', 'https://nextmove-api.onrender.com']
     : ['http://localhost:3000', 'http://localhost:5000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-From']
 }));
 
 // Session configuration
