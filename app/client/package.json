@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build --outDir dist/client",
+    "preview": "vite preview --outDir dist/client"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",

@@ -2,27 +2,35 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install development dependencies and tsx globally
+# Install necessary build tools
+RUN apk add --no-cache python3 make g++
+
+# Copy package files first for better caching
 COPY package*.json ./
-RUN npm ci && npm install -g tsx
+COPY client/package*.json ./client/
+
+# Install dependencies
+RUN npm ci
+RUN cd client && npm ci
+
+# Copy all source files
+COPY . .
+
+# Build the client first
+RUN cd client && npm run build
+
+# Build the server
+RUN npm run build:server
 
 # Create necessary directories and set permissions
-RUN mkdir -p dist/public uploads node_modules/.vite && \
+RUN mkdir -p uploads && \
     chown -R node:node /app
 
-# Copy environment files first
-COPY .env* ./
-COPY client/.env* ./client/
-
-# Copy application files
-COPY . .
-RUN chown -R node:node /app
-
-# Switch to node user for security
+# Switch to node user
 USER node
 
-# Expose the application port
-EXPOSE 5000
+# Expose port
+EXPOSE 10000
 
-# Start the development server
-CMD ["npm", "run", "dev"]
+# Start the production server
+CMD ["node", "dist/index.js"]
