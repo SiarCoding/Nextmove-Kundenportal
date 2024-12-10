@@ -1,15 +1,15 @@
 services:
+  # Backend Service
   - type: web
     name: nextmove-api
     env: node
-    buildCommand: cd app/server && npm install && npm run build
-    startCommand: cd app/server && npm run start
+    buildCommand: cd app && npm install && npm run build
+    startCommand: cd app && npm run start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
-      # Diese Variablen müssen manuell in Render gesetzt werden:
       # Database
       - key: DATABASE_URL
         sync: false
@@ -40,7 +40,5 @@ services:
       - key: CLIENT_URL
         value: https://app.nextmove-consulting.de
       # Facebook
-      - key: FACEBOOK_APP_ID
-        sync: false
-      - key: FACEBOOK_CLIENT_TOKEN
+      - key: VITE_FACEBOOK_APP_ID
         sync: false
