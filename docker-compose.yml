@@ -8,9 +8,11 @@ services:
     container_name: nextmove-app
     restart: always
     ports:
-      - "5000:5000"
+      - "3000:5000"
     volumes:
+      - ./app:/app
       - ./app/uploads:/app/uploads
+      - ./app/client/public:/app/client/public
     environment:
       - NODE_ENV=development
       - PORT=5000

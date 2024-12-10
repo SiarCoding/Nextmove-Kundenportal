@@ -28,5 +28,12 @@ build/
 Thumbs.db
 
 # Application specific
-app/uploads/
 *.log
+
+# Keep these files
+!app/client/public/
+!app/uploads/
+!app/client/public/images/
+!app/client/public/*.svg
+!app/client/public/*.png
+!app/client/public/*.jpg
