@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: nextmove-api
+    env: node
+    buildCommand: cd app && npm install && npm run build
+    startCommand: cd app && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.strato.de
+      - key: SMTP_PORT
+        value: 465
+      - key: SMTP_SECURE
+        value: true
+      - key: SMTP_USER
+        value: info@nextmove-consulting.de
+      - key: SMTP_FROM
+        value: "NextMove Solution <info@nextmove-consulting.de>"
+      - key: CLIENT_URL
+        value: https://app.nextmove-consulting.de

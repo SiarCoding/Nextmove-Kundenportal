@@ -10,6 +10,10 @@ RUN npm ci && npm install -g tsx
 RUN mkdir -p dist/public uploads node_modules/.vite && \
     chown -R node:node /app
 
+# Copy environment files first
+COPY .env* ./
+COPY client/.env* ./client/
+
 # Copy application files
 COPY . .
 RUN chown -R node:node /app
