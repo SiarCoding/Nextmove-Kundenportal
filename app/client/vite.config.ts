@@ -8,12 +8,13 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@db": path.resolve(__dirname, "../server/db"),
-    },
+  build: {
+    outDir: "dist/client",
+    assetsDir: "assets",
+    emptyOutDir: true,
+    copyPublicDir: true,
   },
+  publicDir: "public",
   server: {
     proxy: {
       "/api": {
@@ -22,15 +23,9 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    outDir: "dist/client",
-    emptyOutDir: true,
-    assetsDir: "assets",
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "index.html"),
-      },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-  publicDir: "public",
 });

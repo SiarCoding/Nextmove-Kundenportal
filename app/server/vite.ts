@@ -51,37 +51,18 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "..", "dist", "client");
-  const publicPath = path.resolve(__dirname, "..", "client", "public");
-  
-  console.log('Serving static files from:', distPath);
-  console.log('Serving public files from:', publicPath);
-
-  if (!fs.existsSync(distPath)) {
-    console.error(`Build directory not found: ${distPath}`);
-    throw new Error(`Could not find the build directory: ${distPath}`);
-  }
-
-  // Serve static files from dist
-  app.use(express.static(distPath));
-  
-  // Serve public files directly
-  app.use(express.static(publicPath));
+  // Serve static files
+  app.use(express.static(path.join(__dirname, '../client')));
+  app.use(express.static(path.join(__dirname, '../dist/client')));
 
   // Handle client-side routing
-  app.get("/*", (req, res, next) => {
+  app.get('*', (req, res, next) => {
     // Skip API routes
-    if (req.path.startsWith("/api")) {
+    if (req.url.startsWith('/api')) {
       return next();
     }
-
-    const indexPath = path.join(distPath, "index.html");
     
-    if (!fs.existsSync(indexPath)) {
-      console.error(`index.html not found in: ${indexPath}`);
-      return next(new Error(`Could not find index.html in ${distPath}`));
-    }
-
-    res.sendFile(indexPath);
+    // Send index.html for client-side routing
+    res.sendFile(path.join(__dirname, '../dist/client/index.html'));
   });
 }
