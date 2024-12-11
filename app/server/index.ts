@@ -31,7 +31,9 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" ? false : ["http://localhost:5000", "http://localhost:5173"],
+  origin: process.env.NODE_ENV === "production" 
+    ? ["https://nextmove-docker.onrender.com", "https://nextmove-kundenportal.onrender.com"]
+    : ["http://localhost:5000", "http://localhost:5173"],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -46,7 +48,8 @@ const sessionMiddleware = session({
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax"
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined
   }
 });
 
@@ -63,7 +66,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json({ limit: '1gb' }));
 app.use(express.urlencoded({ extended: true, limit: '1gb' }));
 
-// Use __dirname instead of process.cwd() for uploads path
+// Serve uploaded files
 const uploadsPath = path.join(__dirname, "..", "uploads");
 app.use("/uploads", express.static(uploadsPath));
 

@@ -24,6 +24,11 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     try {
+      // Skip API routes
+      if (url.startsWith("/api")) {
+        return next();
+      }
+
       const clientTemplate = path.resolve(
         __dirname,
         "..",
@@ -47,31 +52,36 @@ export async function setupVite(app: Express, server: Server) {
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "..", "dist", "client");
+  const publicPath = path.resolve(__dirname, "..", "client", "public");
+  
   console.log('Serving static files from:', distPath);
+  console.log('Serving public files from:', publicPath);
 
   if (!fs.existsSync(distPath)) {
     console.error(`Build directory not found: ${distPath}`);
     throw new Error(`Could not find the build directory: ${distPath}`);
   }
 
-  // Serve static files
-  app.use(express.static(distPath, {
-    index: false // Don't serve index.html for /
-  }));
+  // Serve static files from dist
+  app.use(express.static(distPath));
+  
+  // Serve public files directly
+  app.use(express.static(publicPath));
 
   // Handle client-side routing
   app.get("/*", (req, res, next) => {
     // Skip API routes
-    if (req.url.startsWith("/api")) {
+    if (req.path.startsWith("/api")) {
       return next();
     }
 
-    // Serve index.html for all other routes
     const indexPath = path.join(distPath, "index.html");
+    
     if (!fs.existsSync(indexPath)) {
       console.error(`index.html not found in: ${indexPath}`);
       return next(new Error(`Could not find index.html in ${distPath}`));
     }
+
     res.sendFile(indexPath);
   });
 }

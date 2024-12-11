@@ -21,12 +21,14 @@ COPY . .
 RUN cd client && npm run build
 RUN npm run build:server
 
-# Create directories and copy files
+# Set up directories and copy files
 RUN mkdir -p dist/client && \
     cp -r client/dist/client/* dist/client/ && \
     cp -r client/public/* dist/client/ && \
     mkdir -p dist/client/uploads && \
-    chown -R node:node /app
+    chown -R node:node /app && \
+    echo "Verifying files in dist/client:" && \
+    ls -la dist/client/
 
 # Switch to non-root user
 USER node
