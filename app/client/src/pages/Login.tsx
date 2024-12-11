@@ -28,7 +28,7 @@ const resetSchema = z.object({
 
 type ResetFormData = z.infer<typeof resetSchema>;
 
-const ResetPasswordForm = ({ onCancel, setShowResetForm }: { 
+const ResetPasswordForm = ({ onCancel, setShowResetForm }: {
   onCancel: () => void;
   setShowResetForm: (show: boolean) => void;
 }) => {
@@ -149,10 +149,11 @@ export default function Login() {
       setIsLoading(true);
       const loginResponse = await login(values.email, values.password, "customer");
       
-      if (loginResponse.user?.shouldRedirectToOnboarding || !loginResponse.user?.onboardingCompleted) {
-        navigate("/onboarding");
+      // Prüfe shouldRedirectToOnboarding, das vom Server gesetzt wird
+      if (loginResponse.user?.shouldRedirectToOnboarding) {
+        window.location.href = "/onboarding";
       } else {
-        navigate("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast({

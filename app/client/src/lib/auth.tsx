@@ -58,8 +58,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       throw new Error(error.error || "Login failed");
     }
 
-    await queryClient.invalidateQueries({ queryKey: ["session"] });
     const data = await res.json();
+    
+    // Invalidate queries and wait for them to complete
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["session"] }),
+      queryClient.invalidateQueries({ queryKey: ["user"] })
+    ]);
+
+    // Force a small delay to ensure session is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     return data;
   };
 
@@ -70,15 +79,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         credentials: "include",
       });
       queryClient.clear();
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
   const refetchUser = async () => {
-    await queryClient.refetchQueries({ queryKey: ["session"] });
-    await queryClient.refetchQueries({ queryKey: ["user"] });
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ["session"] }),
+      queryClient.refetchQueries({ queryKey: ["user"] })
+    ]);
   };
 
   const value: AuthContextType = {
@@ -107,7 +118,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   }
 
   if (!user) {
-    navigate("/");
+    window.location.href = "/";
     return null;
   }
 
@@ -123,11 +134,13 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
   }
 
   if (!user || !isAdmin) {
-    navigate("/admin/login");
+    window.location.href = "/admin/login";
     return null;
   }
 
   return <>{children}</>;
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}

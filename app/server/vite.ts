@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Response } from "express";
 import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -7,6 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { type Server } from "http";
 import viteConfig from "../vite.config";
+import type { ServeStaticOptions } from "serve-static";
+import type { ServerResponse } from "http";
+import type { IncomingMessage } from "http";
 
 export async function setupVite(app: Express, server: Server) {
   const vite = await createViteServer({
@@ -54,28 +57,35 @@ export function serveStatic(app: Express) {
   const clientDistPath = path.join(__dirname, "..", "dist", "client");
   const clientPublicPath = path.join(__dirname, "..", "client", "public");
 
-  // Serve public files first
-  app.use(express.static(clientPublicPath, {
+  // Serve static files with proper caching and MIME types
+  const staticOptions: ServeStaticOptions = {
     index: false,
-    setHeaders: (res, filePath) => {
+    setHeaders: (res: ServerResponse<IncomingMessage>, path: string, stat: any) => {
       // Set correct MIME types for images
-      if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+      if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
         res.setHeader('Content-Type', 'image/jpeg');
-      } else if (filePath.endsWith('.png')) {
+      } else if (path.endsWith('.png')) {
         res.setHeader('Content-Type', 'image/png');
-      } else if (filePath.endsWith('.svg')) {
+      } else if (path.endsWith('.svg')) {
         res.setHeader('Content-Type', 'image/svg+xml');
       }
       
       // Set cache control headers
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+      if (path.includes('/assets/') || path.match(/\.(jpg|jpeg|png|svg|ico)$/)) {
+        // Cache assets and images for 1 week
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      } else {
+        // Cache other static files for 1 day
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+      }
     }
-  }));
+  };
+
+  // Serve public files first
+  app.use(express.static(clientPublicPath, staticOptions));
 
   // Then serve dist files
-  app.use(express.static(clientDistPath, {
-    index: false
-  }));
+  app.use(express.static(clientDistPath, staticOptions));
 
   // Handle client-side routing
   app.get("*", (req, res, next) => {
