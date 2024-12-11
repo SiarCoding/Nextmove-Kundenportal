@@ -49,7 +49,7 @@ const requireAuth = async (req: Request, res: Response, next: Function) => {
     });
 
     if (!user) {
-      req.session.destroy(() => {});
+      (req.session as any) = null;
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
 
