@@ -56,14 +56,12 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  app.use("*", (req, res) => {
-    const indexPath = path.resolve(distPath, "index.html");
-    
-    if (!fs.existsSync(indexPath)) {
-      console.error(`index.html not found in: ${indexPath}`);
-      throw new Error(`Could not find index.html in ${distPath}`);
+  // Handle client-side routing
+  app.get("*", (req, res, next) => {
+    // Exclude API routes
+    if (req.path.startsWith("/api")) {
+      return next();
     }
-    
-    res.sendFile(indexPath);
+    res.sendFile(path.join(distPath, "index.html"));
   });
 }
