@@ -42,8 +42,8 @@ app.use(cors({
 // Session configuration
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || "your-secret-key",
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
@@ -66,11 +66,11 @@ app.use("/uploads", express.static(uploadsPath));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
-  log(`${req.method} ${req.path}`);
   
   res.on("finish", () => {
     const duration = Date.now() - start;
-    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms :: ${JSON.stringify(req.session?.user || null)}`);
+    const sessionInfo = req.session?.user ? JSON.stringify(req.session.user) : "null";
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms :: ${sessionInfo}`);
   });
   
   next();
