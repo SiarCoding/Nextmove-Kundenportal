@@ -38,7 +38,7 @@ services:
         sync: false
       # URLs
       - key: CLIENT_URL
-        value: https://app.nextmove-consulting.de
+        value: https://nextmove-docker.onrender.com/
       # Facebook
       - key: VITE_FACEBOOK_APP_ID
         sync: false

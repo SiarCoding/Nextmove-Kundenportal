@@ -23,6 +23,9 @@ import express from "express";
 import { sendEmail } from "./services/email";
 import { promises as fsPromises } from "fs";
 import crypto from "crypto";
+// Entferne die folgenden Imports, um Namenskonflikte zu vermeiden:
+// import { requireAuth as requireAuthMiddleware } from "./lib/auth";
+// import { requireAuth } from "./lib/auth";
 
 // Extend Express Request
 declare global {
@@ -33,7 +36,7 @@ declare global {
   }
 }
 
-// Middleware to check if user is authenticated
+// Middleware to check if user is authenticated (lokal definiert)
 const requireAuth = async (req: Request, res: Response, next: Function) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Nicht authentifiziert" });
@@ -2600,66 +2603,4 @@ export function registerRoutes(app: Express) {
       throw error;
     }
   }
-
-  // Update metrics route to include Meta data
-  app.get("/api/metrics/:userId", async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      
-      // Hole die letzten 7 Tage Metriken
-      const metricsData = await db.query.metrics.findMany({
-        where: eq(metrics.userId, userId),
-        orderBy: desc(metrics.date),
-        limit: 7
-      });
-
-      if (!metricsData || metricsData.length === 0) {
-        return res.json([]);  // Leeres Array zurückgeben, wenn keine Daten gefunden
-      }
-
-      // Sortiere die Daten nach Datum (älteste zuerst)
-      const sortedMetrics = metricsData.sort((a, b) => 
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-
-      res.json(sortedMetrics);
-    } catch (error) {
-      console.error("Error fetching metrics:", error);
-      res.status(500).json({ error: "Failed to fetch metrics" });
-    }
-  });
-
-  // Facebook Data Deletion Endpoint
-  app.post('/api/data-deletion', async (req, res) => {
-    try {
-      const { signed_request } = req.body;
-      
-      if (!signed_request) {
-        return res.status(400).json({
-          message: "Signed request is required",
-          url: "http://localhost:5173/data-deletion.html",
-          confirmation_code: "not_available"
-        });
-      }
-
-      // TODO: Verify signed_request and extract user_id
-      // For now, we'll just acknowledge the request
-      
-      console.log('Received data deletion request');
-
-      // Respond to Facebook with confirmation
-      res.json({
-        url: "http://localhost:5173/data-deletion.html",
-        confirmation_code: Date.now().toString(),
-        status: "success"
-      });
-      
-    } catch (error) {
-      console.error('Error processing deletion request:', error);
-      res.status(500).json({
-        message: "Internal server error",
-        url: "http://localhost:5173/data-deletion.html"
-      });
-    }
-  });
 }

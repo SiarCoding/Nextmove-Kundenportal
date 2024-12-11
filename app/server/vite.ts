@@ -62,11 +62,11 @@ export function serveStatic(app: Express) {
     index: false,
     etag: true,
     lastModified: true,
-    setHeaders: (res: ServerResponse<IncomingMessage>, path: string) => {
+    setHeaders: (res: ServerResponse<IncomingMessage>, filePath: string) => {
       // Cache-Kontrolle für verschiedene Dateitypen
-      if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
+      if (filePath.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
         res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 Stunden
-      } else if (path.match(/\.(css|js)$/i)) {
+      } else if (filePath.match(/\.(css|js)$/i)) {
         res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 Jahr
       }
     }
