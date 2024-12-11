@@ -15,16 +15,22 @@ export default defineConfig({
     },
   },
   server: {
-    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
     proxy: {
       "/api": {
-        target: process.env.VITE_API_URL || 'http://localhost:10000',
-        changeOrigin: true
-      }
-    }
+        target: "http://localhost:10000",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "dist/client",
     emptyOutDir: true,
+    assetsDir: "assets",
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+      },
+    },
   },
+  publicDir: "public",
 });

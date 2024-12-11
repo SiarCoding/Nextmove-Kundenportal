@@ -54,14 +54,24 @@ export function serveStatic(app: Express) {
     throw new Error(`Could not find the build directory: ${distPath}`);
   }
 
-  app.use(express.static(distPath));
+  // Serve static files
+  app.use(express.static(distPath, {
+    index: false // Don't serve index.html for /
+  }));
 
   // Handle client-side routing
-  app.get("*", (req, res, next) => {
-    // Exclude API routes
-    if (req.path.startsWith("/api")) {
+  app.get("/*", (req, res, next) => {
+    // Skip API routes
+    if (req.url.startsWith("/api")) {
       return next();
     }
-    res.sendFile(path.join(distPath, "index.html"));
+
+    // Serve index.html for all other routes
+    const indexPath = path.join(distPath, "index.html");
+    if (!fs.existsSync(indexPath)) {
+      console.error(`index.html not found in: ${indexPath}`);
+      return next(new Error(`Could not find index.html in ${distPath}`));
+    }
+    res.sendFile(indexPath);
   });
 }

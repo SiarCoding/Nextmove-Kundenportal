@@ -22,9 +22,10 @@ RUN cd client && npm run build
 RUN npm run build:server
 
 # Create directories and copy files
-RUN mkdir -p dist/client/uploads && \
+RUN mkdir -p dist/client && \
     cp -r client/dist/client/* dist/client/ && \
     cp -r client/public/* dist/client/ && \
+    mkdir -p dist/client/uploads && \
     chown -R node:node /app
 
 # Switch to non-root user
