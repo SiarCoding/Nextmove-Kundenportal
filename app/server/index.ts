@@ -49,19 +49,13 @@ const sessionMiddleware = session({
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined
-  }
+    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
+    path: "/"
+  },
+  name: "nextmove.sid"
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  sessionMiddleware(req, res, (err) => {
-    if (err) {
-      console.error("Session middleware error:", err);
-      return res.status(500).json({ error: "Serverfehler" });
-    }
-    next();
-  });
-});
+app.use(sessionMiddleware);
 
 app.use(express.json({ limit: '1gb' }));
 app.use(express.urlencoded({ extended: true, limit: '1gb' }));
@@ -70,33 +64,15 @@ app.use(express.urlencoded({ extended: true, limit: '1gb' }));
 const uploadsPath = path.join(__dirname, "..", "uploads");
 app.use("/uploads", express.static(uploadsPath));
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
+  log(`${req.method} ${req.path}`);
+  
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms :: ${JSON.stringify(req.session?.user || null)}`);
   });
-
+  
   next();
 });
 
