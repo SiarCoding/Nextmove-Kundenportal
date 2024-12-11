@@ -1,9 +1,10 @@
 services:
-  # Backend Service
   - type: web
     name: nextmove-api
     env: docker
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    healthCheckTimeout: 5s
     envVars:
       - key: NODE_ENV
         value: production

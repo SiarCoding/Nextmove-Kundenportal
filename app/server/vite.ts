@@ -57,56 +57,32 @@ export function serveStatic(app: Express) {
   const clientDistPath = path.join(__dirname, "..", "dist", "client");
   const clientPublicPath = path.join(__dirname, "..", "client", "public");
 
-  // Serve static files with proper caching and MIME types
+  // Verbesserte statische Datei-Konfiguration
   const staticOptions: ServeStaticOptions = {
     index: false,
-    setHeaders: (res: ServerResponse<IncomingMessage>, path: string, stat: any) => {
-      // Set correct MIME types for images
-      if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
-        res.setHeader('Content-Type', 'image/jpeg');
-      } else if (path.endsWith('.png')) {
-        res.setHeader('Content-Type', 'image/png');
-      } else if (path.endsWith('.svg')) {
-        res.setHeader('Content-Type', 'image/svg+xml');
-      }
-      
-      // Set cache control headers
-      if (path.includes('/assets/') || path.match(/\.(jpg|jpeg|png|svg|ico)$/)) {
-        // Cache assets and images for 1 week
-        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-      } else {
-        // Cache other static files for 1 day
-        res.setHeader('Cache-Control', 'public, max-age=86400');
+    etag: true,
+    lastModified: true,
+    setHeaders: (res: ServerResponse<IncomingMessage>, path: string) => {
+      // Cache-Kontrolle für verschiedene Dateitypen
+      if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 Stunden
+      } else if (path.match(/\.(css|js)$/i)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 Jahr
       }
     }
   };
 
   // Serve public files first
   app.use(express.static(clientPublicPath, staticOptions));
-
+  
   // Then serve dist files
   app.use(express.static(clientDistPath, staticOptions));
 
   // Handle client-side routing
   app.get("*", (req, res, next) => {
-    // Skip API routes
-    if (req.path.startsWith("/api/")) {
-      return next();
-    }
-
-    // Try to serve from public first
-    const publicFilePath = path.join(clientPublicPath, req.path);
-    if (fs.existsSync(publicFilePath) && fs.statSync(publicFilePath).isFile()) {
-      return res.sendFile(publicFilePath);
-    }
-
-    // Then try dist
-    const distFilePath = path.join(clientDistPath, req.path);
-    if (fs.existsSync(distFilePath) && fs.statSync(distFilePath).isFile()) {
-      return res.sendFile(distFilePath);
-    }
-
-    // Finally serve index.html for client routing
-    res.sendFile(path.join(clientDistPath, "index.html"));
+    if (req.path.startsWith("/api/")) return next();
+    
+    const indexPath = path.join(clientDistPath, "index.html");
+    res.sendFile(indexPath);
   });
 }
