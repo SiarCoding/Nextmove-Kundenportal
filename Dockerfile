@@ -38,8 +38,10 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/client/dist/client ./client/dist/client
 COPY --from=builder /app/client/public ./client/public
 
-# Create necessary directories with correct permissions
+# Ensure all directories exist with correct permissions
 RUN mkdir -p uploads && \
+    mkdir -p client/dist/client && \
+    mkdir -p client/public && \
     chown -R node:node /app
 
 # Create volume for uploads
