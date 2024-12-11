@@ -51,9 +51,20 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  // Serve static files
-  app.use(express.static(path.join(__dirname, '../client')));
-  app.use(express.static(path.join(__dirname, '../dist/client')));
+  // Serve static files with correct MIME types
+  app.use(express.static(path.join(__dirname, '../dist/client'), {
+    setHeaders: (res, path) => {
+      if (path.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+      if (path.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    }
+  }));
+
+  // Serve public files
+  app.use(express.static(path.join(__dirname, '../client/public')));
 
   // Handle client-side routing
   app.get('*', (req, res, next) => {
