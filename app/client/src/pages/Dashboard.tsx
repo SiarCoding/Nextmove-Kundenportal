@@ -88,8 +88,7 @@ export default function Dashboard() {
     <CustomerLayout>
       <div className="space-y-8">
         {/* Metrics Section */}
-        <PerformanceMetrics metrics={formattedMetrics} />
-
+        <PerformanceMetrics />
 
         {/* Progress Section */}
         <Card>
