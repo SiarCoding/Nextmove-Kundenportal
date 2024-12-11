@@ -17,16 +17,21 @@ RUN cd client && npm install
 # Copy all source files
 COPY . .
 
-# Build client and server
+# Build client
 RUN cd client && npm run build
+
+# Build server
 RUN npm run build:server
 
-# Set up directories and copy files
-RUN mkdir -p dist/client && \
-    cp -r client/dist/client/* dist/client/ && \
+# Set up directories and files
+RUN mkdir -p dist/client/uploads && \
+    # First, copy the public files
     cp -r client/public/* dist/client/ && \
-    mkdir -p dist/client/uploads && \
+    # Then, copy the built files (this might overwrite some public files if needed)
+    cp -r client/dist/client/* dist/client/ && \
+    # Ensure proper permissions
     chown -R node:node /app && \
+    # Verify the contents
     echo "Verifying files in dist/client:" && \
     ls -la dist/client/
 

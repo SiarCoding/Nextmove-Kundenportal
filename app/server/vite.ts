@@ -51,63 +51,52 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.join(__dirname, '../dist/client');
-  const publicPath = path.join(__dirname, '../client/public');
-  
-  console.log('Serving static files from:', distPath);
-  console.log('Serving public files from:', publicPath);
+  const clientDistPath = path.join(__dirname, "..", "dist", "client");
+  const clientPublicPath = path.join(__dirname, "..", "client", "public");
 
-  // Serve public files first (higher priority)
-  app.use(express.static(publicPath, {
+  // Serve public files first
+  app.use(express.static(clientPublicPath, {
+    index: false,
     setHeaders: (res, filePath) => {
-      // Set cache control for images
-      if (filePath.match(/\.(jpg|jpeg|png|svg)$/)) {
-        res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
-        if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
-          res.setHeader('Content-Type', 'image/jpeg');
-        } else if (filePath.endsWith('.png')) {
-          res.setHeader('Content-Type', 'image/png');
-        } else if (filePath.endsWith('.svg')) {
-          res.setHeader('Content-Type', 'image/svg+xml');
-        }
+      // Set correct MIME types for images
+      if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+        res.setHeader('Content-Type', 'image/jpeg');
+      } else if (filePath.endsWith('.png')) {
+        res.setHeader('Content-Type', 'image/png');
+      } else if (filePath.endsWith('.svg')) {
+        res.setHeader('Content-Type', 'image/svg+xml');
       }
+      
+      // Set cache control headers
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
     }
   }));
 
   // Then serve dist files
-  app.use(express.static(distPath, {
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.js')) {
-        res.setHeader('Content-Type', 'application/javascript');
-        res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-      }
-      if (filePath.endsWith('.css')) {
-        res.setHeader('Content-Type', 'text/css');
-        res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-      }
-    }
+  app.use(express.static(clientDistPath, {
+    index: false
   }));
 
   // Handle client-side routing
-  app.get('*', (req, res, next) => {
+  app.get("*", (req, res, next) => {
     // Skip API routes
-    if (req.url.startsWith('/api')) {
+    if (req.path.startsWith("/api/")) {
       return next();
     }
 
     // Try to serve from public first
-    const publicFilePath = path.join(publicPath, req.url);
-    if (fs.existsSync(publicFilePath)) {
+    const publicFilePath = path.join(clientPublicPath, req.path);
+    if (fs.existsSync(publicFilePath) && fs.statSync(publicFilePath).isFile()) {
       return res.sendFile(publicFilePath);
     }
 
     // Then try dist
-    const distFilePath = path.join(distPath, req.url);
-    if (fs.existsSync(distFilePath)) {
+    const distFilePath = path.join(clientDistPath, req.path);
+    if (fs.existsSync(distFilePath) && fs.statSync(distFilePath).isFile()) {
       return res.sendFile(distFilePath);
     }
 
-    // Finally, serve index.html for client routing
-    res.sendFile(path.join(distPath, 'index.html'));
+    // Finally serve index.html for client routing
+    res.sendFile(path.join(clientDistPath, "index.html"));
   });
 }

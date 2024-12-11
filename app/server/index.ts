@@ -36,7 +36,8 @@ app.use(cors({
     : ["http://localhost:5000", "http://localhost:5173"],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 // Session configuration
@@ -64,6 +65,8 @@ app.use(express.urlencoded({ extended: true, limit: '1gb' }));
 const uploadsPath = path.join(__dirname, "..", "uploads");
 app.use("/uploads", express.static(uploadsPath));
 
+registerRoutes(app);
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   
@@ -77,7 +80,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 (async () => {
-  registerRoutes(app);
   const server = createServer(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

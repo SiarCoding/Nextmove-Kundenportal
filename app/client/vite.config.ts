@@ -13,6 +13,11 @@ export default defineConfig({
     assetsDir: "assets",
     emptyOutDir: true,
     copyPublicDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   publicDir: "public",
   server: {
@@ -21,6 +26,10 @@ export default defineConfig({
         target: "http://localhost:10000",
         changeOrigin: true,
       },
+    },
+    fs: {
+      strict: false,
+      allow: [".."],
     },
   },
   resolve: {
