@@ -1,32 +1,7 @@
 import { Request } from "express";
-import { users } from "@db/schema";
-import { type InferModel } from "drizzle-orm";
+import { type User as SchemaUser } from "@db/schema";
 
-export type User = {
-  id: number;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  companyId: number | null;
-  role: string;
-  isApproved: boolean;
-  profileImage: string | null;
-  createdAt: Date;
-  lastActive: Date | null;
-  assignedAdmin: string;
-  onboardingCompleted: boolean;
-  isFirstLogin: boolean;
-  currentPhase: string;
-  completedPhases: any[];
-  progress: number;
-  googleAccessToken: string | null;
-  googleRefreshToken: string | null;
-  googleTokenExpiry: Date | null;
-  googleDriveConnected: boolean;
-  metaAccessToken: string | null;
-  metaConnected: boolean;
-};
+export type User = SchemaUser;
 
 declare global {
   namespace Express {
