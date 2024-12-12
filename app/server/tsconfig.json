@@ -2,19 +2,22 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
     "outDir": "../dist/server",
-    "rootDir": ".",
-    "baseUrl": ".",
+    "rootDir": "..",
+    "baseUrl": "..",
     "paths": {
-      "@/*": ["../client/src/*"],
-      "@db/*": ["../db/*"]
+      "@/*": ["client/src/*"],
+      "@db/*": ["db/*"]
     }
   },
-  "include": ["./**/*.ts"],
+  "include": [
+    "../db/**/*.ts",
+    "./**/*.ts"
+  ],
   "exclude": ["node_modules"]
 } 
